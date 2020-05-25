@@ -1,6 +1,6 @@
 # Blueprint/Boilerplate For Golang Projects
 
-[![Build Status](https://travis-ci.com/MartinHeinz/go-project-blueprint.svg?branch=master)](https://travis-ci.com/MartinHeinz/go-project-blueprint)
+[![Build Status](https://travis-ci.org/github/tiburon-777/1c2jira.svg?branch=master)](https://travis-ci.org/github/tiburon-777/1c2jira)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=MartinHeinz_go-project-blueprint&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=MartinHeinz_go-project-blueprint)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/ec7ebefe63609984cb5c/test_coverage)](https://codeclimate.com/github/MartinHeinz/go-project-blueprint/test_coverage)
 [![Go Report Card](https://goreportcard.com/badge/github.com/MartinHeinz/go-project-blueprint)](https://goreportcard.com/report/github.com/MartinHeinz/go-project-blueprint)
@@ -57,6 +57,7 @@ docker run docker.pkg.github.com/martinheinz/go-project-blueprint/blueprint:late
     - Click Set Up
     - Click Configure with Travis
     - Copy the Command to Encrypt the Travis Token
+        (travis encrypt c338ab4dad4ce0dda7c095e11f27a13d02c85ea6)
     - Run `travis encrypt --com <TOKEN_YOU_COPPIED>`
     - Populate the `secure` Field in `.travis.yml` with outputted string
     - Follow steps to populate your `sonar-project.properties`

@@ -1,56 +1,56 @@
-# Matrix build runs 4 parallel builds
 matrix:
   include:
-    - language: go  # Build and Test
-      sudo: required
-      services:
-        - docker
-      script:
-        - export GO111MODULE=on
-        - go mod vendor  # Download dependencies
-        - make build  # Build application
-        - test -f bin/linux_amd64/1c2jira  # Test for presence of binary built in previous step
-        - make all-container  # Make all Docker containers
-        - docker images | grep "^docker.pkg.github.com/tiburon-777/1c2jira/1c2jira.*__linux_amd64"  # Check presence of created images
-        - make test  # Runs tests inside test image
-
-    - language: go  # SonarCloud
-      addons:
-        sonarcloud:
-          organization: martinheinz-github
-          token:
-            secure: "tYsUxue9kLZWb+Y8kwU28j2sa0pq20z2ZvZrbKCN7Sw0WGtODQLaK9tZ94u1Sy02qL5QcabukbENmbvfouzXf4EfaKjDmYH9+Ja22X26MfTLVpaCDTQEGmNyREOFCHpjNXPgDMv1C70By5U+aPWSYF/lehB5rFijwCf7rmTFRNUDeotCTCuWb2dIkrX2i6raVu34SvqqGxKQmmH+NPLe7uKO/wXqH+cWQH1P9oJYeVksNGruw4M0MznUeQHeJQYpTLooxhEEzYiBbkerWGDMwBdZdPQwVrO2b8FEDRw/GWTFoL+FkdVMl4n4lrbO/cQLbPMTGcfupNCuVHh1n8cGp8spMkrfQGtKqvDRuz2tBs0n1PWXCRS6pgZQw/ClLPgi/vVryVRwOabIHSQQLRVhcdp8pkYdyX3aH1EdlIHiJLT6sacS0vJPqZMF/HNsPEoHe4YdiYvx/tcYMU63KQVZzgF4HfQMWy69s1d0RZUqd+wrtHU1DHwnkq1TSe+8nMlbvbmMsm6FVqGistrnVjx4C9TjDWQcjprYU40zCvc1uvoSPimVcaD8ITalCDHlEfoV7wZuisV8+gJzOh9pDZ/joohW7/P3zklGgI2sH7qt62GE4o5UyRArzJC7eIj7Oxx6GdbeEqw09M4rCfR1g5tHWIqVHz5CajvkXkPqrRGu2oI="
-      before_script:
-        - ./reports.sh  # Creates directories and files for reports
-        - export GO111MODULE=on
-        - go mod vendor  # Download dependencies
-        - make ci  # Run tests and generate reports (See `ci` step in Makefile)
-      script:
-        - sonar-scanner  # Run analysis using SonarCloud scanner plugin
-
-    - language: go  # CodeClimate
-      before_script:
-        - ./reports.sh  # Create directories and files for reports
-        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter  # Download CodeClimate test reporter
-        - chmod +x ./cc-test-reporter  # Make it executable
-        - ./cc-test-reporter before-build  # Notify CodeClimate of pending report
-      script:
-        - export GO111MODULE=on
-        - go mod vendor  # Download dependencies
-        - make ci  # Run tests and generate reports (See `ci` step in Makefile)
-      after_script:
-        - ./cc-test-reporter after-build -t gocov --exit-code $TRAVIS_TEST_RESULT  # Send report to CodeClimate or notify it of failing build based on exit code
-
-    - language: go  # Push if on master
-      services:
-        - docker
-      if: branch = master
-      script:
-        - export GO111MODULE=on
-        - go mod vendor  # Download dependencies
-        - echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME" --password-stdin  # Login to GitHub Registry using Travis environment variables
-        - make container  # Create dirty and latest images
-        - make push  # Push image to registry
-
+  - language: go
+    sudo: required
+    services:
+    - docker
+    script:
+    - export GO111MODULE=on
+    - go mod vendor
+    - make build
+    - test -f bin/linux_amd64/1c2jira
+    - make all-container
+    - docker images | grep "^docker.pkg.github.com/tiburon-777/1c2jira/1c2jira.*__linux_amd64"
+    - make test
+  - language: go
+    addons:
+      sonarcloud:
+        organization: tiburon-777
+        token:
+          secure: Enh4pSdoBfB8z4kqAAlJeREViCWCVje95XdBB3GmcHicGL8VQreg75famhBml2jeNVdYvD4s1Hqb6fHdycZBr2xTOgw5Mn8JFXeLSvSdJs40yXtGnRrwjV/8eLsl1xN6MTqcTE5SYJNB1JHVFUutt29981Bxyj/X4PMVQ+thBehR/5oapvBg20gnh24B53z0mD67D5Jc4aZBGcTnizoZQbteqiIeocBz1vBN1AurqFXywgAWQmjXx9OwQoOqOS2GBhSolZjwhjuP5oTPDH2cXzPIKIEulzGzw0RBQ+uErrNcS7/z35ng5H8M6QWKThhcVol4Si1OPop3saGwg1N0lIdkujszWqfejVEf+rI7CgO3zQFxpkX5JF0sYVF2wid4iigW+TGHqLo6scI01Qs3K1j1cPfQARZ1dQg32MzubA1w7hmjXdl8MTFb0j9kRN0k24oFH1IkXbqhQa8tDvgSzsvnxzqmnnyu5rCUvT2F37U887ws0PoryYNxubR2TciCyrYAOrudLXbASChukFfxQNBftIFMOaUB8/Uy/HPFGyyqV9MvCavatveAcxs2e+sr4QHDotGpRyi2BuclF5lyL+VVBg36FH4hDL/1TGA972bIsBAAvOF07cxoznIVxSPvT420ovaceUJm2HhszFzE0W3rker6FhoZJ/SmmfHW+Sk=
+    before_script:
+    - "./reports.sh"
+    - export GO111MODULE=on
+    - go mod vendor
+    - make ci
+    script:
+    - sonar-scanner
+  - language: go
+    before_script:
+    - "./reports.sh"
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+      > ./cc-test-reporter
+    - chmod +x ./cc-test-reporter
+    - "./cc-test-reporter before-build"
+    script:
+    - export GO111MODULE=on
+    - go mod vendor
+    - make ci
+    after_script:
+    - "./cc-test-reporter after-build -t gocov --exit-code $TRAVIS_TEST_RESULT"
+  - language: go
+    services:
+    - docker
+    if: branch = master
+    script:
+    - export GO111MODULE=on
+    - go mod vendor
+    - echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME"
+      --password-stdin
+    - make container
+    - make push
 notifications:
   email: false
+env:
+  global:
+    secure: Enh4pSdoBfB8z4kqAAlJeREViCWCVje95XdBB3GmcHicGL8VQreg75famhBml2jeNVdYvD4s1Hqb6fHdycZBr2xTOgw5Mn8JFXeLSvSdJs40yXtGnRrwjV/8eLsl1xN6MTqcTE5SYJNB1JHVFUutt29981Bxyj/X4PMVQ+thBehR/5oapvBg20gnh24B53z0mD67D5Jc4aZBGcTnizoZQbteqiIeocBz1vBN1AurqFXywgAWQmjXx9OwQoOqOS2GBhSolZjwhjuP5oTPDH2cXzPIKIEulzGzw0RBQ+uErrNcS7/z35ng5H8M6QWKThhcVol4Si1OPop3saGwg1N0lIdkujszWqfejVEf+rI7CgO3zQFxpkX5JF0sYVF2wid4iigW+TGHqLo6scI01Qs3K1j1cPfQARZ1dQg32MzubA1w7hmjXdl8MTFb0j9kRN0k24oFH1IkXbqhQa8tDvgSzsvnxzqmnnyu5rCUvT2F37U887ws0PoryYNxubR2TciCyrYAOrudLXbASChukFfxQNBftIFMOaUB8/Uy/HPFGyyqV9MvCavatveAcxs2e+sr4QHDotGpRyi2BuclF5lyL+VVBg36FH4hDL/1TGA972bIsBAAvOF07cxoznIVxSPvT420ovaceUJm2HhszFzE0W3rker6FhoZJ/SmmfHW+Sk=
