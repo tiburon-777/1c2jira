@@ -1,4 +1,4 @@
-# 1c2jira - Адаптер REST API 1C <=> JIRA
+# Blueprint/Boilerplate For Golang Projects
 
 [![Build Status](https://travis-ci.com/MartinHeinz/go-project-blueprint.svg?branch=master)](https://travis-ci.com/MartinHeinz/go-project-blueprint)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=MartinHeinz_go-project-blueprint&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=MartinHeinz_go-project-blueprint)

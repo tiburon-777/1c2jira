@@ -9,7 +9,7 @@ matrix:
         - export GO111MODULE=on
         - go mod vendor  # Download dependencies
         - make build  # Build application
-        - test -f bin/linux_amd64/blueprint  # Test for presence of binary built in previous step
+        - test -f bin/linux_amd64/1c2jira  # Test for presence of binary built in previous step
         - make all-container  # Make all Docker containers
         - docker images | grep "^docker.pkg.github.com/tiburon-777/1c2jira/1c2jira.*__linux_amd64"  # Check presence of created images
         - make test  # Runs tests inside test image
@@ -17,7 +17,7 @@ matrix:
     - language: go  # SonarCloud
       addons:
         sonarcloud:
-          organization: tiburon-777-github
+          organization: martinheinz-github
           token:
             secure: "tYsUxue9kLZWb+Y8kwU28j2sa0pq20z2ZvZrbKCN7Sw0WGtODQLaK9tZ94u1Sy02qL5QcabukbENmbvfouzXf4EfaKjDmYH9+Ja22X26MfTLVpaCDTQEGmNyREOFCHpjNXPgDMv1C70By5U+aPWSYF/lehB5rFijwCf7rmTFRNUDeotCTCuWb2dIkrX2i6raVu34SvqqGxKQmmH+NPLe7uKO/wXqH+cWQH1P9oJYeVksNGruw4M0MznUeQHeJQYpTLooxhEEzYiBbkerWGDMwBdZdPQwVrO2b8FEDRw/GWTFoL+FkdVMl4n4lrbO/cQLbPMTGcfupNCuVHh1n8cGp8spMkrfQGtKqvDRuz2tBs0n1PWXCRS6pgZQw/ClLPgi/vVryVRwOabIHSQQLRVhcdp8pkYdyX3aH1EdlIHiJLT6sacS0vJPqZMF/HNsPEoHe4YdiYvx/tcYMU63KQVZzgF4HfQMWy69s1d0RZUqd+wrtHU1DHwnkq1TSe+8nMlbvbmMsm6FVqGistrnVjx4C9TjDWQcjprYU40zCvc1uvoSPimVcaD8ITalCDHlEfoV7wZuisV8+gJzOh9pDZ/joohW7/P3zklGgI2sH7qt62GE4o5UyRArzJC7eIj7Oxx6GdbeEqw09M4rCfR1g5tHWIqVHz5CajvkXkPqrRGu2oI="
       before_script:
