@@ -1,10 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"github.com/go-martini/martini"
 	"github.com/natefinch/lumberjack"
 	"github.com/tiburon-777/1c2jira/src/params"
-	"log"
 )
 
 func main() {
