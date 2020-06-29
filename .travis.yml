@@ -21,7 +21,7 @@ env:
 
 before_install:
   - echo "current branch is ${BRANCH}"
-  - ls ${BRANCH} && cd src
+  - cd src
 
 stages:
   - name: Tests
