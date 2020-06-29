@@ -1,56 +1,44 @@
-matrix:
-  include:
-  - language: go
-    sudo: required
-    services:
-    - docker
-    script:
-    - export GO111MODULE=on
-    - go mod vendor
-    - make build
-    - test -f bin/linux_amd64/1c2jira
-    - make all-container
-    - docker images | grep "^docker.pkg.github.com/tiburon-777/1c2jira/1c2jira.*__linux_amd64"
-    - make test
-  - language: go
-    addons:
-      sonarcloud:
-        organization: tiburon-777
-        token:
-          secure: Enh4pSdoBfB8z4kqAAlJeREViCWCVje95XdBB3GmcHicGL8VQreg75famhBml2jeNVdYvD4s1Hqb6fHdycZBr2xTOgw5Mn8JFXeLSvSdJs40yXtGnRrwjV/8eLsl1xN6MTqcTE5SYJNB1JHVFUutt29981Bxyj/X4PMVQ+thBehR/5oapvBg20gnh24B53z0mD67D5Jc4aZBGcTnizoZQbteqiIeocBz1vBN1AurqFXywgAWQmjXx9OwQoOqOS2GBhSolZjwhjuP5oTPDH2cXzPIKIEulzGzw0RBQ+uErrNcS7/z35ng5H8M6QWKThhcVol4Si1OPop3saGwg1N0lIdkujszWqfejVEf+rI7CgO3zQFxpkX5JF0sYVF2wid4iigW+TGHqLo6scI01Qs3K1j1cPfQARZ1dQg32MzubA1w7hmjXdl8MTFb0j9kRN0k24oFH1IkXbqhQa8tDvgSzsvnxzqmnnyu5rCUvT2F37U887ws0PoryYNxubR2TciCyrYAOrudLXbASChukFfxQNBftIFMOaUB8/Uy/HPFGyyqV9MvCavatveAcxs2e+sr4QHDotGpRyi2BuclF5lyL+VVBg36FH4hDL/1TGA972bIsBAAvOF07cxoznIVxSPvT420ovaceUJm2HhszFzE0W3rker6FhoZJ/SmmfHW+Sk=
-    before_script:
-    - "./reports.sh"
-    - export GO111MODULE=on
-    - go mod vendor
-    - make ci
-    script:
-    - sonar-scanner
-  - language: go
-    before_script:
-    - "./reports.sh"
-    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-      > ./cc-test-reporter
-    - chmod +x ./cc-test-reporter
-    - "./cc-test-reporter before-build"
-    script:
-    - export GO111MODULE=on
-    - go mod vendor
-    - make ci
-    after_script:
-    - "./cc-test-reporter after-build -t gocov --exit-code $TRAVIS_TEST_RESULT"
-  - language: go
-    services:
-    - docker
-    if: branch = master
-    script:
-    - export GO111MODULE=on
-    - go mod vendor
-    - echo "$DOCKER_PASSWORD" | docker login docker.pkg.github.com -u "$DOCKER_USERNAME"
-      --password-stdin
-    - make container
-    - make push
+language: go
+
+go:
+  - "1.14"
+
+os:
+  - linux
+
+git:
+  quiet: true
+  submodules: false
+
 notifications:
   email: false
+
 env:
   global:
-    secure: Enh4pSdoBfB8z4kqAAlJeREViCWCVje95XdBB3GmcHicGL8VQreg75famhBml2jeNVdYvD4s1Hqb6fHdycZBr2xTOgw5Mn8JFXeLSvSdJs40yXtGnRrwjV/8eLsl1xN6MTqcTE5SYJNB1JHVFUutt29981Bxyj/X4PMVQ+thBehR/5oapvBg20gnh24B53z0mD67D5Jc4aZBGcTnizoZQbteqiIeocBz1vBN1AurqFXywgAWQmjXx9OwQoOqOS2GBhSolZjwhjuP5oTPDH2cXzPIKIEulzGzw0RBQ+uErrNcS7/z35ng5H8M6QWKThhcVol4Si1OPop3saGwg1N0lIdkujszWqfejVEf+rI7CgO3zQFxpkX5JF0sYVF2wid4iigW+TGHqLo6scI01Qs3K1j1cPfQARZ1dQg32MzubA1w7hmjXdl8MTFb0j9kRN0k24oFH1IkXbqhQa8tDvgSzsvnxzqmnnyu5rCUvT2F37U887ws0PoryYNxubR2TciCyrYAOrudLXbASChukFfxQNBftIFMOaUB8/Uy/HPFGyyqV9MvCavatveAcxs2e+sr4QHDotGpRyi2BuclF5lyL+VVBg36FH4hDL/1TGA972bIsBAAvOF07cxoznIVxSPvT420ovaceUJm2HhszFzE0W3rker6FhoZJ/SmmfHW+Sk=
+    - GO111MODULE=on
+    - GOPROXY=https://proxy.golang.org
+    - BRANCH="${TRAVIS_PULL_REQUEST_BRANCH:-$TRAVIS_BRANCH}"
+
+before_install:
+  - echo "current branch is ${BRANCH}"
+  - ls ${BRANCH} && cd src
+
+stages:
+  - name: Tests
+
+jobs:
+  include:
+    - stage: "Tests"
+      name: "go get"
+      install: echo "skip"
+      script: cd /tmp && go get "github.com/${TRAVIS_REPO_SLUG}/src@${BRANCH}"
+
+    - stage: "Tests"
+      name: "Linters"
+      install: go install github.com/golangci/golangci-lint/cmd/golangci-lint
+      script: golangci-lint run ./...
+
+    - stage: "Tests"
+      name: "Unit tests"
+      install: go mod download
+      script: go test -v -count=1 -race -gcflags=-l -timeout=30s ./...
