@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-martini/martini"
 	"github.com/natefinch/lumberjack"
-	"github.com/tiburon-777/1c2jira/cmd/1c2jira/params"
+	"github.com/tiburon-777/1c2jira/src/params"
 	"log"
 )
 
