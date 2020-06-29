@@ -9,6 +9,7 @@ import (
 
 func main() {
 	log.Println("Запускаем сервис...")
+	log.Println("Запускаем сервис...")
 	pms := params.GetInstance()
 	m := martini.Classic()
 	// Запускаем логи в файл и воркер, только на ПРОДЕ!
